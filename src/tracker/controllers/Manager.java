@@ -1,8 +1,14 @@
+package tracker.controllers;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import tracker.model.Epic;
+import tracker.model.SubTask;
+import tracker.model.Task;
+
 public class Manager {
-    Long id = Long.valueOf(0);
+    private Long id = Long.valueOf(0);
     HashMap<Long, Task> taskMap = new HashMap<>();
     HashMap<Long, SubTask> subTaskMap = new HashMap<>();
     HashMap<Long, Epic> epicMap = new HashMap<>();
@@ -80,7 +86,9 @@ public class Manager {
         subTaskMap.put(id, subTask);
         Long idEpic = subTask.getIdEpic();
         Epic epic = getEpicByID(idEpic);
-        epic.idListSubTask.add(id);
+        ArrayList <Long> idListSubTask = epic.getIdListSubTask();
+        idListSubTask.add(id);
+        epic.setIdListSubTask(idListSubTask);
         updateEpic(epic);
     }
 
@@ -93,11 +101,11 @@ public class Manager {
         // проверить статусы у всех Подзадач этого Эпика и потом у самого Эпика
         boolean isDone = true;
         boolean isNew = true;
-        if (epic.idListSubTask.isEmpty()) {
+        if (epic.getIdListSubTask().isEmpty()) {
             isDone = false;
         } else {
-            for (Long idSubTask : epic.idListSubTask) {
-                String statusSubTask = subTaskMap.get(idSubTask).status;
+            for (Long idSubTask : epic.getIdListSubTask()) {
+                String statusSubTask = subTaskMap.get(idSubTask).getStatus();
                 if (statusSubTask.equals("NEW")) {
                     isDone = false;
                 }
@@ -108,18 +116,18 @@ public class Manager {
         }
 
         if (isDone && !isNew) {
-            epic.status = "DONE";
+            epic.setStatus("DONE");
         } else if (!isDone && isNew) {
-            epic.status = "NEW";
+            epic.setStatus("NEW");
         } else {
-            epic.status = "IN_PROGRESS";
+            epic.setStatus("IN_PROGRESS");
         }
         epicMap.put(epic.getId(),epic);
     }
 
     public void updateSubTask(SubTask subTask) {
         subTaskMap.put(subTask.getId(),subTask);
-        Long idEpic = subTask.idEpic; // сохранили ID Эпика
+        Long idEpic = subTask.getIdEpic(); // сохранили ID Эпика
         Epic epic = getEpicByID(idEpic);
         updateEpic(epic);
     }
@@ -132,7 +140,7 @@ public class Manager {
     public void deleteEpicByID(Long id) {
         Epic epic = getEpicByID(id);
         epicMap.remove(id);
-        ArrayList<Long> subTasks= epic.idListSubTask;
+        ArrayList<Long> subTasks= epic.getIdListSubTask();
         for (Long idSubTask : subTasks) {
             deleteSubTaskByID(idSubTask);
         }
@@ -140,13 +148,13 @@ public class Manager {
 
     public void deleteSubTaskByID(Long id) {
         SubTask subTask = getSubTaskByID(id);
-        Long idEpic = subTask.idEpic; // сохранили ID Эпика
+        Long idEpic = subTask.getIdEpic(); // сохранили ID Эпика
         subTaskMap.remove(id); // удалили подзадачу
 
         // надо удалить ID подзадачи из списка idListSubTask
         Epic epic = getEpicByID(idEpic);
         if (epic != null) { // это условие нужно, чтобы проверить, что эпик не был удален
-            epic.idListSubTask.remove(id);
+            epic.getIdListSubTask().remove(id);
             updateEpic(epic);
         }
     }
@@ -155,7 +163,7 @@ public class Manager {
     public ArrayList<SubTask> getSubTasksByEpicId(Long id) {
         Epic epic = getEpicByID(id);
         ArrayList<SubTask> subTasksArrayList = new ArrayList<>();
-        for (long idSubTask : epic.idListSubTask) {
+        for (long idSubTask : epic.getIdListSubTask()) {
             SubTask subTask = subTaskMap.get(idSubTask);
             subTasksArrayList.add(subTask);
         }

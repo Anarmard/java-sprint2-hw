@@ -1,4 +1,8 @@
 import java.util.ArrayList;
+import tracker.model.Task;
+import tracker.model.SubTask;
+import tracker.model.Epic;
+import tracker.controllers.Manager;
 
 public class Main {
     public static void main(String[] args) {
@@ -30,9 +34,9 @@ public class Main {
         System.out.println(manager.getAllSubTasks());
 
         // Изменение статуса у задачи task1 и подзадачи subTask11
-        task1.status = "IN_PROGRESS";
+        task1.setStatus("IN_PROGRESS");
         manager.updateTask(task1);
-        subTask11.status = "DONE";
+        subTask11.setStatus("DONE");
         manager.updateSubTask(subTask11);
         System.out.println("Печать всех задач/эпиков/подзадач после их изменения:");
         System.out.println(manager.getAllTasks());
