@@ -6,7 +6,7 @@ import java.util.Objects;
 public class Epic extends Task {
     private ArrayList <Long> idListSubTask;
 
-    public Epic(String name, String description, Long id, String status, ArrayList<Long> idListSubTask) {
+    public Epic(String name, String description, Long id, TaskStatus status, ArrayList<Long> idListSubTask) {
         super(name, description, id, status);
         this.idListSubTask = idListSubTask;
     }
@@ -21,7 +21,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "tracker.model.Epic{" +
+        return "Epic{" +
                 "name ='" + getName() + '\'' +
                 ", description ='" + getDescription() + '\'' +
                 ", id ='" + getId() + '\'' +

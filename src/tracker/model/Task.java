@@ -6,20 +6,20 @@ public class Task {
     private String name;
     private String description;
     private Long id;
-    private String status;
+    private TaskStatus status;
 
-    public Task(String name, String description, Long id, String status) {
+    public Task(String name, String description, Long id, TaskStatus status) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
-    public String getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
@@ -49,7 +49,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "tracker.model.Task{" +
+        return "Task{" +
                 "name ='" + name + '\'' +
                 ", description ='" + description + '\'' +
                 ", id ='" + id + '\'' +

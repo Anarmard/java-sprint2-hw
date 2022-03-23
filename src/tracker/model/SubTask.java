@@ -5,7 +5,7 @@ import java.util.Objects;
 public class SubTask extends Task {
     private Long idEpic;
 
-    public SubTask(String name, String description, Long id, String status, Long idEpic) {
+    public SubTask(String name, String description, Long id, TaskStatus status, Long idEpic) {
         super(name, description, id, status);
         this.idEpic = idEpic;
     }
@@ -16,7 +16,7 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return "tracker.model.SubTask{" +
+        return "SubTask{" +
                 "name ='" + getName() + '\'' +
                 ", description ='" + getDescription() + '\'' +
                 ", id ='" + getId() + '\'' +
