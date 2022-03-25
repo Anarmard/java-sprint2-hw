@@ -11,9 +11,9 @@ import tracker.model.TaskStatus;
 
 public class InMemoryTaskManager implements TaskManager{
     private Long id = Long.valueOf(0);
-    HashMap<Long, Task> taskMap = new HashMap<>();
-    HashMap<Long, SubTask> subTaskMap = new HashMap<>();
-    HashMap<Long, Epic> epicMap = new HashMap<>();
+    private HashMap<Long, Task> taskMap = new HashMap<>();
+    private HashMap<Long, SubTask> subTaskMap = new HashMap<>();
+    private HashMap<Long, Epic> epicMap = new HashMap<>();
     private static HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
@@ -183,8 +183,8 @@ public class InMemoryTaskManager implements TaskManager{
         subTaskMap.remove(id); // удалили подзадачу
 
         // надо удалить ID подзадачи из списка idListSubTask
-        Epic epic = getEpicByID(idEpic);
-        if (epic != null) { // это условие нужно, чтобы проверить, что эпик не был удален
+        if (getEpicByID(idEpic) != null) { // это условие нужно, чтобы проверить, что эпик не был удален
+            Epic epic = getEpicByID(idEpic);
             epic.getIdListSubTask().remove(id);
             updateEpic(epic);
         }
