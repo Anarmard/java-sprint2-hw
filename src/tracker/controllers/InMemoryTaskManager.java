@@ -68,6 +68,11 @@ public class InMemoryTaskManager implements TaskManager{
     // Получение по идентификатору.
     @Override
     public Task getTaskByID(Long id) {
+        return taskMap.get(id);
+    }
+
+    @Override
+    public Task getTaskUser(Long id) { // в history сохраняются только те задачи, вызванные user
         Task task= taskMap.get(id);
         historyManager.add(task);
         return task;
@@ -75,6 +80,11 @@ public class InMemoryTaskManager implements TaskManager{
 
     @Override
     public Epic getEpicByID(Long id) {
+        return epicMap.get(id);
+    }
+
+    @Override
+    public Epic getEpicUser(Long id) { // в history сохраняются только те задачи, вызванные user
         Epic epic = epicMap.get(id);
         historyManager.add(epic);
         return epic;
@@ -82,6 +92,11 @@ public class InMemoryTaskManager implements TaskManager{
 
     @Override
     public SubTask getSubTaskByID(Long id) {
+        return subTaskMap.get(id);
+    }
+
+    @Override
+    public SubTask getSubTaskUser(Long id) { // в history сохраняются только те задачи, вызванные user
         SubTask subTask = subTaskMap.get(id);
         historyManager.add(subTask);
         return subTask;
@@ -164,6 +179,7 @@ public class InMemoryTaskManager implements TaskManager{
     @Override
     public void deleteTaskByID(Long id) {
         taskMap.remove(id);
+        historyManager.remove(id);
     }
 
     @Override
@@ -174,6 +190,7 @@ public class InMemoryTaskManager implements TaskManager{
         for (Long idSubTask : subTasks) {
             deleteSubTaskByID(idSubTask);
         }
+        historyManager.remove(id);
     }
 
     @Override
@@ -181,6 +198,7 @@ public class InMemoryTaskManager implements TaskManager{
         SubTask subTask = getSubTaskByID(id);
         Long idEpic = subTask.getIdEpic(); // сохранили ID Эпика
         subTaskMap.remove(id); // удалили подзадачу
+        historyManager.remove(id);
 
         // надо удалить ID подзадачи из списка idListSubTask
         if (getEpicByID(idEpic) != null) { // это условие нужно, чтобы проверить, что эпик не был удален

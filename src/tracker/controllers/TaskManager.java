@@ -14,9 +14,13 @@ public interface TaskManager {
     public void deleteAllEpics();
     public void deleteAllSubTasks();
 
-    public Task getTaskByID(Long id);
-    public Epic getEpicByID(Long id);
-    public SubTask getSubTaskByID(Long id);
+    public Task getTaskByID(Long id); // используется для корректной работы кода, на history не влияют
+    public Epic getEpicByID(Long id); // используется для корректной работы кода, на history не влияют
+    public SubTask getSubTaskByID(Long id); // используется для корректной работы кода, на history не влияют
+
+    public Task getTaskUser(Long id); // используется пользователем, именно эти запросы сохраняются в history
+    public Epic getEpicUser(Long id); // используется пользователем, именно эти запросы сохраняются в history
+    public SubTask getSubTaskUser(Long id); // используется пользователем, именно эти запросы сохраняются в history
 
     public void createTask(Task task);
     public void createEpic(Epic epic);
