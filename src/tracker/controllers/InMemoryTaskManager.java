@@ -126,14 +126,15 @@ public class InMemoryTaskManager implements TaskManager{
         Epic epic = getEpicByID(idEpic);
         ArrayList <Long> idListSubTask = epic.getIdListSubTask();
         idListSubTask.add(id);
-        epic.setIdListSubTask(idListSubTask);
-        updateEpic(epic);
+        // epic.setIdListSubTask(idListSubTask); - !операция добавления элемента в List была совершена на том же
+        // объекте List, что хранится в объекте Epic!
+        // updateEpic(epic); // - спасибо за комментарий, теперь буду знать
     }
 
     // Обновление. Новая версия объекта с верным идентификатором передаются в виде параметра.
     @Override
     public void updateTask(Task task) {
-        taskMap.put(task.getId(),task);
+        taskMap.put(task.getId(), task);
     }
 
     @Override
@@ -164,12 +165,14 @@ public class InMemoryTaskManager implements TaskManager{
         } else {
             epic.setStatus(TaskStatus.IN_PROGRESS);
         }
-        epicMap.put(epic.getId(),epic);
+        // epicMap.put(epic.getId(), epic); - Если проводятся операции на объекте Epic, который уже хранится в Map,
+        // то необязательно заново сохранять объект в Map.
+        // спасибо за комментарий, понял, постараюсь учитывать в будущем
     }
 
     @Override
     public void updateSubTask(SubTask subTask) {
-        subTaskMap.put(subTask.getId(),subTask);
+        subTaskMap.put(subTask.getId(), subTask);
         Long idEpic = subTask.getIdEpic(); // сохранили ID Эпика
         Epic epic = getEpicByID(idEpic);
         updateEpic(epic);
