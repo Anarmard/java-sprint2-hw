@@ -2,6 +2,7 @@ package tracker.controllers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import tracker.model.Epic;
@@ -11,10 +12,14 @@ import tracker.model.TaskStatus;
 
 public class InMemoryTaskManager implements TaskManager{
     private Long id = Long.valueOf(0);
-    private HashMap<Long, Task> taskMap = new HashMap<>();
-    private HashMap<Long, SubTask> subTaskMap = new HashMap<>();
-    private HashMap<Long, Epic> epicMap = new HashMap<>();
+    private final Map<Long, Task> taskMap = new HashMap<>();
+    private final Map<Long, SubTask> subTaskMap = new HashMap<>();
+    private final Map<Long, Epic> epicMap = new HashMap<>();
     private static HistoryManager historyManager = Managers.getDefaultHistory();
+
+    // Можно добавить модификатор final, так как поле никогда не должно меняться. Тоже касается всех Map.
+    // К тому же будет лучше, если у полей будет тип данных Map вместо HashMap. Предпочтительнее обращаться
+    // через интерфейс, чем через имплементацию.
 
     @Override
     public List<Task> getHistory() {
@@ -23,29 +28,34 @@ public class InMemoryTaskManager implements TaskManager{
 
     // Получение списка всех задач.
     @Override
-    public ArrayList<Task> getAllTasks() {
-        ArrayList<Task> taskArrayList = new ArrayList<>();
-        for (Task task : taskMap.values()) {
-            taskArrayList.add(task);
-        }
+    public List<Task> getAllTasks() {
+        // лучше использовать интерфейсы вместо реализации в сигнатуре. public List<Task> getAllTasks()
+        // лучше чем завязка на конкретную реализацию ArrayList. Лучше сверить все методы в данном классе
+        // и проверить на это
+        List<Task> taskArrayList = new ArrayList<>(taskMap.values());
+        // Здесь и во остальных схожих методах можно улучшить код создание List из Map.
+        //new ArrayList(taskMap.values()) сделает ровно ту же задачу всего одной строкой
+        // for (Task task : taskMap.values()) {
+        //    taskArrayList.add(task);
+        // }
         return taskArrayList;
     }
 
     @Override
-    public ArrayList<Epic> getAllEpics() {
-        ArrayList<Epic> epicArrayList = new ArrayList<>();
-        for (Epic epic : epicMap.values()) {
-            epicArrayList.add(epic);
-        }
+    public List<Epic> getAllEpics() {
+        List<Epic> epicArrayList = new ArrayList<>(epicMap.values());
+        //for (Epic epic : epicMap.values()) {
+        //    epicArrayList.add(epic);
+        //}
         return epicArrayList;
     }
 
     @Override
-    public ArrayList<SubTask> getAllSubTasks() {
-        ArrayList<SubTask> subTaskArrayList = new ArrayList<>();
-        for (SubTask subTask : subTaskMap.values()) {
-            subTaskArrayList.add(subTask);
-        }
+    public List<SubTask> getAllSubTasks() {
+        List<SubTask> subTaskArrayList = new ArrayList<>(subTaskMap.values());
+        //for (SubTask subTask : subTaskMap.values()) {
+        //    subTaskArrayList.add(subTask);
+        //}
         return subTaskArrayList;
     }
 
@@ -213,9 +223,9 @@ public class InMemoryTaskManager implements TaskManager{
 
     // Получение списка всех подзадач определённого эпика.
     @Override
-    public ArrayList<SubTask> getSubTasksByEpicId(Long id) {
+    public List<SubTask> getSubTasksByEpicId(Long id) {
         Epic epic = getEpicByID(id);
-        ArrayList<SubTask> subTasksArrayList = new ArrayList<>();
+        List<SubTask> subTasksArrayList = new ArrayList<>();
         for (long idSubTask : epic.getIdListSubTask()) {
             SubTask subTask = subTaskMap.get(idSubTask);
             subTasksArrayList.add(subTask);

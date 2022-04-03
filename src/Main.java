@@ -37,8 +37,8 @@ public class Main {
         System.out.println(manager.getAllEpics());
         System.out.println(manager.getAllSubTasks());
 
-        //checkMethods(manager);
-        checkHistory(manager);
+        checkMethods(manager);
+        // checkHistory(manager);
     }
 
     public static void checkHistory(TaskManager manager) {
