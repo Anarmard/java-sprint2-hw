@@ -30,32 +30,22 @@ public class InMemoryTaskManager implements TaskManager{
     @Override
     public List<Task> getAllTasks() {
         // лучше использовать интерфейсы вместо реализации в сигнатуре. public List<Task> getAllTasks()
-        // лучше чем завязка на конкретную реализацию ArrayList. Лучше сверить все методы в данном классе
-        // и проверить на это
+        // лучше чем завязка на конкретную реализацию ArrayList.
         List<Task> taskArrayList = new ArrayList<>(taskMap.values());
-        // Здесь и во остальных схожих методах можно улучшить код создание List из Map.
-        //new ArrayList(taskMap.values()) сделает ровно ту же задачу всего одной строкой
-        // for (Task task : taskMap.values()) {
-        //    taskArrayList.add(task);
-        // }
+        // new ArrayList(taskMap.values()) сделает ровно ту же задачу всего одной строкой
+        // for (Task task : taskMap.values()) {  taskArrayList.add(task); }
         return taskArrayList;
     }
 
     @Override
     public List<Epic> getAllEpics() {
         List<Epic> epicArrayList = new ArrayList<>(epicMap.values());
-        //for (Epic epic : epicMap.values()) {
-        //    epicArrayList.add(epic);
-        //}
         return epicArrayList;
     }
 
     @Override
     public List<SubTask> getAllSubTasks() {
         List<SubTask> subTaskArrayList = new ArrayList<>(subTaskMap.values());
-        //for (SubTask subTask : subTaskMap.values()) {
-        //    subTaskArrayList.add(subTask);
-        //}
         return subTaskArrayList;
     }
 
@@ -136,9 +126,9 @@ public class InMemoryTaskManager implements TaskManager{
         Epic epic = getEpicByID(idEpic);
         ArrayList <Long> idListSubTask = epic.getIdListSubTask();
         idListSubTask.add(id);
-        // epic.setIdListSubTask(idListSubTask); - !операция добавления элемента в List была совершена на том же
-        // объекте List, что хранится в объекте Epic!
-        // updateEpic(epic); // - спасибо за комментарий, теперь буду знать
+        // epic.setIdListSubTask(idListSubTask);
+        // updateEpic(epic); - операция добавления элемента в List была совершена на том же
+        // объекте List, что хранится в объекте Epic
     }
 
     // Обновление. Новая версия объекта с верным идентификатором передаются в виде параметра.
@@ -177,7 +167,6 @@ public class InMemoryTaskManager implements TaskManager{
         }
         // epicMap.put(epic.getId(), epic); - Если проводятся операции на объекте Epic, который уже хранится в Map,
         // то необязательно заново сохранять объект в Map.
-        // спасибо за комментарий, понял, постараюсь учитывать в будущем
     }
 
     @Override

@@ -21,13 +21,14 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "\nEpic{" +
-                "name ='" + getName() + '\'' +
-                ", description ='" + getDescription() + '\'' +
-                ", id ='" + getId() + '\'' +
-                ", status ='" + getStatus() + '\'' +
-                ", idListSubTask ='" + idListSubTask +
-                '\'' + '}';
+        return getId() + "," + TaskType.EPIC + "," + getName() + "," + getStatus() + "," + getDescription();
+                //"\nEpic{" +
+                //"name ='" + getName() + '\'' +
+                //", description ='" + getDescription() + '\'' +
+                //", id ='" + getId() + '\'' +
+                //", status ='" + getStatus() + '\'' +
+                //", idListSubTask ='" + idListSubTask +
+                //'\'' + '}';
     }
 
     @Override

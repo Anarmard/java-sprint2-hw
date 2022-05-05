@@ -16,13 +16,14 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return "\nSubTask{" +
-                "name ='" + getName() + '\'' +
-                ", description ='" + getDescription() + '\'' +
-                ", id ='" + getId() + '\'' +
-                ", status ='" + getStatus() + '\'' +
-                ", idEpic ='" + idEpic +
-                '\'' + '}';
+        return getId() + "," + TaskType.SUBTASK + "," + getName() + "," + getStatus() + "," + getDescription() + "," + idEpic;
+                //"\nSubTask{" +
+                //"name ='" + getName() + '\'' +
+                //", description ='" + getDescription() + '\'' +
+                //", id ='" + getId() + '\'' +
+                //", status ='" + getStatus() + '\'' +
+                //", idEpic ='" + idEpic +
+                //'\'' + '}';
     }
 
     @Override

@@ -1,0 +1,28 @@
+id,type,name,status,description,epic
+1,TASK,Продукты,NEW,Заехать в магазин
+2,TASK,Ремонт,NEW,Покрасить стену
+3,EPIC,Уборка дома,NEW,Еженедельная процедура
+7,EPIC,Спорт,NEW,Улучшить здоровье
+4,SUBTASK,Пыль,NEW,Протереть пыль,3
+5,SUBTASK,Стирка,NEW,Постирать вещи,3
+6,SUBTASK,Посуда,NEW,Помыть посуду,3
+
+3,2,1,4,id,type,name,status,description,epic
+1,TASK,Продукты,NEW,Заехать в магазин
+
+3,2,1,4,id,type,name,status,description,epic
+1,TASK,Продукты,NEW,Заехать в магазин
+2,TASK,Ремонт,NEW,Покрасить стену
+
+3,2,1,4,id,type,name,status,description,epic
+1,TASK,Продукты,NEW,Заехать в магазин
+2,TASK,Ремонт,NEW,Покрасить стену
+3,EPIC,Уборка дома,NEW,Еженедельная процедура
+
+3,2,1,4,id,type,name,status,description,epic
+1,TASK,Продукты,NEW,Заехать в магазин
+2,TASK,Ремонт,NEW,Покрасить стену
+3,EPIC,Уборка дома,NEW,Еженедельная процедура
+4,EPIC,Спорт,NEW,Улучшить здоровье
+
+3,2,1,4,
