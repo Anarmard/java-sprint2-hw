@@ -6,6 +6,8 @@ import tracker.model.Task;
 import tracker.model.TaskStatus;
 import tracker.model.TaskType;
 
+import tracker.ManagerSaveException;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -16,8 +18,8 @@ import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private String fileName = "TasksCSV.csv";
-    private String pathDr = "C://Users//Anar//dev//java-sprint2-hw";
-    private Path pathTaskManager = Paths.get(pathDr, fileName); // создаем объект типа Path (содержит полный путь к файлу)
+    private final String pathDr = "C://Users//Anar//dev//java-sprint2-hw";
+    private final Path pathTaskManager = Paths.get(pathDr, fileName); // создаем объект типа Path (содержит полный путь к файлу)
     public static FileBackedTasksManager manager = new FileBackedTasksManager("TasksCSV.csv");
 
     public FileBackedTasksManager(String fileName) {
@@ -88,25 +90,25 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     // split[4] - это описание задачи
     // split[5] - это номер айди эпика (если рассматриваем subtask)
 
-    public static Task fromStringTask(String value) {
+    private static Task fromStringTask(String value) {
         String[] split = value.split(",");
         Task task = new Task(split[2], split[4], Long.valueOf(split[0]), TaskStatus.valueOf(split[3]));
         return task;
     }
 
-    public static Epic fromStringEpic(String value) {
+    private static Epic fromStringEpic(String value) {
         String[] split = value.split(",");
         Epic epic = new Epic(split[2], split[4], Long.valueOf(split[0]), TaskStatus.valueOf(split[3]), null);
         return epic;
     }
 
-    public static SubTask fromStringSubTask(String value) {
+    private static SubTask fromStringSubTask(String value) {
         String[] split = value.split(",");
         SubTask subTask = new SubTask(split[2], split[4], Long.valueOf(split[0]), TaskStatus.valueOf(split[3]), Long.getLong(split[5]));
         return subTask;
     }
 
-    static List<Integer> fromString(String value) {
+    private static List<Integer> fromString(String value) {
         String[] split = value.split(",");
         List<Integer> listID = new ArrayList<>();
         for (String id : split) {
@@ -115,7 +117,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return listID;
     }
 
-    public static FileBackedTasksManager loadFromFile(Path path) {
+    private static FileBackedTasksManager loadFromFile(Path path) {
         FileBackedTasksManager managerLoadFromFile = new FileBackedTasksManager("TasksCSV.csv");
 
         try (BufferedReader br = new BufferedReader(new
@@ -159,22 +161,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return managerLoadFromFile;
     }
 
-    public String toString(Task task) {
+    private String toString(Task task) {
         return task.getId() + "," + TaskType.TASK + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription();
     }
 
-    public String toString(Epic epic) {
+    private String toString(Epic epic) {
         return epic.getId() + "," + TaskType.EPIC + "," + epic.getName() + "," + epic.getStatus() + "," + epic.getDescription();
     }
 
-    public String toString(SubTask subTask) {
+    private String toString(SubTask subTask) {
         return subTask.getId() + "," + TaskType.SUBTASK + "," + subTask.getName() + "," + subTask.getStatus() +
                 "," + subTask.getDescription() + "," + subTask.getIdEpic();
     }
 
     // Напишите статические методы static String toString(HistoryManager manager)
     // для сохранения менеджера истории из CSV.
-    public static String toString(FileBackedTasksManager manager) {
+    private static String toString(FileBackedTasksManager manager) {
         List<Task> taskList = manager.getHistory();
         StringBuilder builder = new StringBuilder();
         for (Task taskE : taskList) {
@@ -184,7 +186,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return builder.toString();
     }
 
-    public void save() {
+    private void save() {
         // проверка, есть такой файл или нет. Если есть, то удаляем и создаем. Если нет, то просто создаем.
         try {
             // удаление файла, если он уже существует
@@ -206,18 +208,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
             // запись в файл по очереди сначала все Task, потом Epic, потом все SubTask
             List<Task> taskList = getAllTasks();
-            for (int i = 0; i < taskList.size(); i++) {
-                fileWriter.write(toString(taskList.get(i)) + "\n");
+            for (Task task : taskList) {
+                fileWriter.write(toString(task) + "\n");
             }
 
             List<Epic> epicList = getAllEpics();
-            for (int i = 0; i < epicList.size(); i++) {
-                fileWriter.write(toString(epicList.get(i)) + "\n");
+            for (Epic epic : epicList) {
+                fileWriter.write(toString(epic) + "\n");
             }
 
             List<SubTask> subTaskList = getAllSubTasks();
-            for (int i = 0; i < subTaskList.size(); i++) {
-                fileWriter.write(toString(subTaskList.get(i)) + "\n");
+            for (SubTask subTask : subTaskList) {
+                fileWriter.write(toString(subTask) + "\n");
             }
 
             // сохраняем историю
@@ -230,11 +232,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             } catch (ManagerSaveException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    private class ManagerSaveException extends Throwable {
-        public ManagerSaveException(IOException e) {
         }
     }
 
