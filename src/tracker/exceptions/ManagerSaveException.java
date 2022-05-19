@@ -1,4 +1,4 @@
-package tracker;
+package tracker.exceptions;
 
 import java.io.IOException;
 

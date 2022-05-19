@@ -1,9 +1,15 @@
 package tracker.model;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class SubTask extends Task {
     private Long idEpic;
+
+    public SubTask(String name, String description, Long id, TaskStatus status, LocalDateTime startTime, Long duration, Long idEpic) {
+        super(name, description, id, status, startTime, duration);
+        this.idEpic = idEpic;
+    }
 
     public SubTask(String name, String description, Long id, TaskStatus status, Long idEpic) {
         super(name, description, id, status);
@@ -16,14 +22,9 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return getId() + "," + TaskType.SUBTASK + "," + getName() + "," + getStatus() + "," + getDescription() + "," + idEpic;
-                //"\nSubTask{" +
-                //"name ='" + getName() + '\'' +
-                //", description ='" + getDescription() + '\'' +
-                //", id ='" + getId() + '\'' +
-                //", status ='" + getStatus() + '\'' +
-                //", idEpic ='" + idEpic +
-                //'\'' + '}';
+        return getId() + "," + TaskType.SUBTASK + "," + getName() + "," + getStatus()
+                + "," + getStartTime() + "," + getDuration() + "," + getEndTime(getStartTime(), getDuration()) + ","
+                + getDescription() + "," + idEpic;
     }
 
     @Override

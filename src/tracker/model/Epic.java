@@ -1,10 +1,19 @@
 package tracker.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
     private ArrayList <Long> idListSubTask;
+    private LocalDateTime endTimeEpic;
+
+    public Epic(String name, String description, Long id, TaskStatus status, LocalDateTime startTime, Long duration,
+                LocalDateTime endTimeEpic, ArrayList<Long> idListSubTask) {
+        super(name, description, id, status, startTime, duration);
+        this.idListSubTask = idListSubTask;
+        this.endTimeEpic = endTimeEpic;
+    }
 
     public Epic(String name, String description, Long id, TaskStatus status, ArrayList<Long> idListSubTask) {
         super(name, description, id, status);
@@ -19,16 +28,19 @@ public class Epic extends Task {
         return idListSubTask;
     }
 
+    public LocalDateTime getEndTimeEpic() {
+        return endTimeEpic;
+    }
+
+    public void setEndTimeEpic(LocalDateTime endTimeEpic) {
+        this.endTimeEpic = endTimeEpic;
+    }
+
     @Override
     public String toString() {
-        return getId() + "," + TaskType.EPIC + "," + getName() + "," + getStatus() + "," + getDescription();
-                //"\nEpic{" +
-                //"name ='" + getName() + '\'' +
-                //", description ='" + getDescription() + '\'' +
-                //", id ='" + getId() + '\'' +
-                //", status ='" + getStatus() + '\'' +
-                //", idListSubTask ='" + idListSubTask +
-                //'\'' + '}';
+        return getId() + "," + TaskType.EPIC + "," + getName() + "," + getStatus()
+                + "," + getStartTime() + "," + getDuration() +  "," + getEndTimeEpic() +  ","
+                + getDescription() + "," + getIdListSubTask();
     }
 
     @Override

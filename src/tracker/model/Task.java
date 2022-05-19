@@ -1,12 +1,23 @@
 package tracker.model;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
-
     private String name;
     private String description;
     private Long id;
     private TaskStatus status;
+    private LocalDateTime startTime;
+    private Long duration;
+
+    public Task(String name, String description, Long id, TaskStatus status, LocalDateTime startTime, Long duration) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
 
     public Task(String name, String description, Long id, TaskStatus status) {
         this.name = name;
@@ -47,16 +58,29 @@ public class Task {
         this.description = description;
     }
 
+    public LocalDateTime getStartTime() {return startTime; }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public Long getDuration() {return duration; }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getEndTime (LocalDateTime startTime, Long duration) {
+        LocalDateTime endTime = null;
+        if ((startTime != null) || (duration != null)) endTime = startTime.plusMinutes(duration);
+        return endTime;
+    }
+
     @Override
     public String toString() {
-        return id + "," + TaskType.TASK + "," + name + "," + status + "," + description;
-
-                //"\nTask{" +
-                //"name ='" + name + '\'' +
-                //", description ='" + description + '\'' +
-                //", id ='" + id + '\'' +
-                //", status ='" + status +
-                //'\'' + '}';
+        return id + "," + TaskType.TASK + "," + name + "," + status
+                + "," + startTime + "," + duration + "," + getEndTime(startTime, duration) + ","
+                + description;
     }
 
     @Override

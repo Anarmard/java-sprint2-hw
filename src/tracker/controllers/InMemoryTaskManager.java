@@ -1,9 +1,7 @@
 package tracker.controllers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import tracker.model.Epic;
 import tracker.model.SubTask;
@@ -15,11 +13,59 @@ public class InMemoryTaskManager implements TaskManager{
     private final Map<Long, Task> taskMap = new HashMap<>();
     private final Map<Long, SubTask> subTaskMap = new HashMap<>();
     private final Map<Long, Epic> epicMap = new HashMap<>();
-    private static HistoryManager historyManager = Managers.getDefaultHistory();
+    private static final HistoryManager historyManager = Managers.getDefaultHistory();
+
+    private final Comparator<Task> comparator = new Comparator<>() {
+        @Override
+        public int compare(Task t1, Task t2) { // сортируем по getStartTime, если пусто ранжировать в конце по id
+            if ((t1.getStartTime() != null) && (t2.getStartTime() != null)) {
+                return t1.getStartTime().compareTo(t2.getStartTime());
+            } else if ((t1.getStartTime() == null) && (t2.getStartTime() == null)) {
+                return t1.getId().compareTo(t2.getId());
+            } else if (t1.getStartTime() == null) {
+                return 1;
+            } else
+                return -1;
+        }
+    };
+
+    private final Set<Task> prioritizedTasks = new TreeSet<>(comparator);
 
     // Можно добавить модификатор final, так как поле никогда не должно меняться. Тоже касается всех Map.
     // К тому же будет лучше, если у полей будет тип данных Map вместо HashMap. Предпочтительнее обращаться
     // через интерфейс, чем через имплементацию.
+
+    @Override
+    public Set<Task> getPrioritizedTasks() {
+        return prioritizedTasks;
+    }
+
+    @Override
+    public boolean isDateTimeFree(Task task) {
+        if ((task.getStartTime() != null) && (task.getDuration() != null)) {
+            for (Task taskExist : getPrioritizedTasks()) {
+                if ((taskExist.getStartTime() != null) && (taskExist.getDuration() != null)) {
+                    LocalDateTime taskStartDate = task.getStartTime();
+                    LocalDateTime taskEndDate = task.getEndTime(taskStartDate, task.getDuration());
+                    LocalDateTime existTaskStartDate = taskExist.getStartTime();
+                    LocalDateTime existTaskEndDate = taskExist.getEndTime(existTaskStartDate, taskExist.getDuration());
+
+                    if ((existTaskStartDate.isAfter(taskStartDate)) && existTaskStartDate.isBefore(taskEndDate)) {
+                        return false; // в указанный период уже запланирован старт другой задачи
+                    }
+
+                    if ((existTaskEndDate.isAfter(taskStartDate)) && existTaskEndDate.isBefore(taskEndDate)) {
+                        return false; // в указанный период уже запланировано окончание другой задачи
+                    }
+
+                    if ((existTaskStartDate.isBefore(taskStartDate)) && existTaskEndDate.isAfter(taskEndDate)) {
+                        return false; // весь указанный период уже занят выполнением другой задачи
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     public List<Task> getHistory() {
@@ -105,30 +151,59 @@ public class InMemoryTaskManager implements TaskManager{
     // Создание. Сам объект должен передаваться в качестве параметра.
     @Override
     public void createTask(Task task) {
-        id++;
-        task.setId(id);
-        taskMap.put(id, task);
+        if (isDateTimeFree(task)) {
+            if (task.getId() == 0L) {
+                id++;
+                task.setId(id);
+                taskMap.put(id, task);
+            }
+            taskMap.put(task.getId(), task);
+            prioritizedTasks.add(task);
+        } else {
+            System.out.println("Указанный период времени уже занят другой задачей. " +
+                    "Укажите другую дату начала для задачи: "+ task.getName());
+        }
     }
 
     @Override
     public void createEpic(Epic epic) {
-        id++;
-        epic.setId(id);
-        epicMap.put(id, epic);
+        if (epic.getId() == 0L) {
+            id++;
+            epic.setId(id);
+        }
+        epicMap.put(epic.getId(), epic);
+        prioritizedTasks.add(epic);
     }
 
     @Override
     public void createSubTask(SubTask subTask) {
-        id++;
-        subTask.setId(id);
-        subTaskMap.put(id, subTask);
-        Long idEpic = subTask.getIdEpic();
-        Epic epic = getEpicByID(idEpic);
-        ArrayList <Long> idListSubTask = epic.getIdListSubTask();
-        idListSubTask.add(id);
-        // epic.setIdListSubTask(idListSubTask);
-        // updateEpic(epic); - операция добавления элемента в List была совершена на том же
-        // объекте List, что хранится в объекте Epic
+        if (isDateTimeFree(subTask)) {
+            if (subTask.getId() == 0L) {
+                id++;
+                subTask.setId(id);
+            }
+            subTaskMap.put(subTask.getId(), subTask);
+            prioritizedTasks.add(subTask);
+            Long idEpic = subTask.getIdEpic();
+            Epic epic = getEpicByID(idEpic);
+            if (epic.getIdListSubTask() == null) {
+                ArrayList<Long> idListSubTask = new ArrayList<>();
+                idListSubTask.add(subTask.getId());
+                epic.setIdListSubTask(idListSubTask);
+            } else {
+                ArrayList<Long> idListSubTask = epic.getIdListSubTask();
+                idListSubTask.add(subTask.getId());
+            }
+
+            // обновляем startTime endTime duration
+            epic.setStartTime(calcStartTimeEpic(epic.getId()));
+            epic.setEndTimeEpic(calcEndTimeEpic(epic.getId()));
+            epic.setDuration(calcDurationEpic(epic.getId()));
+            prioritizedTasks.add(epic);
+        } else {
+            System.out.println("Указанный период времени уже занят другой задачей. " +
+                    "Укажите другую дату начала для задачи: "+ subTask.getName());
+        }
     }
 
     // Обновление. Новая версия объекта с верным идентификатором передаются в виде параметра.
@@ -165,6 +240,12 @@ public class InMemoryTaskManager implements TaskManager{
         } else {
             epic.setStatus(TaskStatus.IN_PROGRESS);
         }
+
+        // обновляем startTime endTime duration
+        epic.setStartTime(calcStartTimeEpic(epic.getId()));
+        epic.setEndTimeEpic(calcEndTimeEpic(epic.getId()));
+        epic.setDuration(calcDurationEpic(epic.getId()));
+
         // epicMap.put(epic.getId(), epic); - Если проводятся операции на объекте Epic, который уже хранится в Map,
         // то необязательно заново сохранять объект в Map.
     }
@@ -206,6 +287,9 @@ public class InMemoryTaskManager implements TaskManager{
         if (getEpicByID(idEpic) != null) { // это условие нужно, чтобы проверить, что эпик не был удален
             Epic epic = getEpicByID(idEpic);
             epic.getIdListSubTask().remove(id);
+            epic.setStartTime(calcStartTimeEpic(idEpic)); // заново посчитали startTime, т.к. subTask был удален
+            epic.setEndTimeEpic(calcEndTimeEpic(idEpic)); // заново посчитали endTime, т.к. subTask был удален
+            epic.setDuration(calcDurationEpic(idEpic)); // заново посчитали duration, т.к. subTask был удален
             updateEpic(epic);
         }
     }
@@ -222,5 +306,71 @@ public class InMemoryTaskManager implements TaskManager{
         return subTasksArrayList;
     }
 
+    // Расчет для Epic даты начала, как самая ранняя дата начала из всех Subtask
+    @Override
+    public LocalDateTime calcStartTimeEpic (Long id) {
+        Epic epic = getEpicByID(id);
+        if (epic.getIdListSubTask().isEmpty()) {
+            return null;
+        }
+        List<SubTask> subTasksArrayList = getSubTasksByEpicId(id);
+        LocalDateTime startTime = null;
+        boolean isFirstNotNullDate = true; // если найдем хоть одно не пустое поле startTime у SubTask-ов
+        for (SubTask subTask : subTasksArrayList) {
+            if (subTask.getStartTime()!= null) {
+                if (isFirstNotNullDate) { // первое же не пустое поле устаналиваем в качестве ориентира
+                    startTime = subTask.getStartTime();
+                    isFirstNotNullDate = false;
+                } else if (subTask.getStartTime().isBefore(startTime)) {
+                    startTime = subTask.getStartTime();
+                }
+            }
+        }
+        return startTime;
+    }
 
+    // Расчет для Epic даты окончания, как самая поздняя дата окончания из всех Subtask
+    @Override
+    public LocalDateTime calcEndTimeEpic (Long id) {
+        Epic epic = getEpicByID(id);
+        if (epic.getIdListSubTask().isEmpty()) {
+            return null;
+        }
+        List<SubTask> subTasksArrayList = getSubTasksByEpicId(id);
+        LocalDateTime endTime = null;
+        boolean isFirstNotNullDate = true; // если найдем хоть одно не пустое поле endTime у SubTask-ов
+        for (SubTask subTask : subTasksArrayList) {
+            if (subTask.getEndTime(subTask.getStartTime(), subTask.getDuration())!= null) {
+                if (isFirstNotNullDate) { // первое же не пустое поле устаналиваем в качестве ориентира
+                    endTime = subTask.getEndTime(subTask.getStartTime(), subTask.getDuration());
+                    isFirstNotNullDate = false;
+                }else if (subTask.getEndTime(subTask.getStartTime(), subTask.getDuration()).isAfter(endTime)) {
+                    endTime = subTask.getEndTime(subTask.getStartTime(), subTask.getDuration());
+                }
+            }
+        }
+        return endTime;
+    }
+
+    // Расчет для Epic продолжительности, как сумма продолжительности всех Subtask
+    @Override
+    public Long calcDurationEpic(Long id) {
+        Epic epic = getEpicByID(id);
+        if (epic.getIdListSubTask().isEmpty()) {
+            return null;
+        }
+        List<SubTask> subTasksArrayList = getSubTasksByEpicId(id);
+        Long duration = null;
+        boolean isFirstNotNullDuration = true; // если найдем хоть одно не пустое поле duration у SubTask-ов
+        for (SubTask subTask : subTasksArrayList) {
+            if (subTask.getDuration()!= null) {
+                if (isFirstNotNullDuration) { // нашли не пустое поле, значит duration у Epic уже не может быть null
+                    duration = 0L;
+                    isFirstNotNullDuration = false;
+                }
+                duration += subTask.getDuration();
+            }
+        }
+        return duration;
+    }
 }

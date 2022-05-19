@@ -1,28 +1,5 @@
 id,type,name,status,description,epic
-1,TASK,Продукты,NEW,Заехать в магазин
-2,TASK,Ремонт,NEW,Покрасить стену
-3,EPIC,Уборка дома,NEW,Еженедельная процедура
-7,EPIC,Спорт,NEW,Улучшить здоровье
-4,SUBTASK,Пыль,NEW,Протереть пыль,3
-5,SUBTASK,Стирка,NEW,Постирать вещи,3
-6,SUBTASK,Посуда,NEW,Помыть посуду,3
+1,TASK,1Task,NEW,1TaskDescription,null,null,null
+2,TASK,2Task,NEW,2TaskDescription,2022-05-01T10:00,180,2022-05-01T13:00
+3,TASK,3Task,NEW,3TaskDescription,2022-05-01T09:00,60,2022-05-01T10:00
 
-3,2,1,4,id,type,name,status,description,epic
-1,TASK,Продукты,NEW,Заехать в магазин
-
-3,2,1,4,id,type,name,status,description,epic
-1,TASK,Продукты,NEW,Заехать в магазин
-2,TASK,Ремонт,NEW,Покрасить стену
-
-3,2,1,4,id,type,name,status,description,epic
-1,TASK,Продукты,NEW,Заехать в магазин
-2,TASK,Ремонт,NEW,Покрасить стену
-3,EPIC,Уборка дома,NEW,Еженедельная процедура
-
-3,2,1,4,id,type,name,status,description,epic
-1,TASK,Продукты,NEW,Заехать в магазин
-2,TASK,Ремонт,NEW,Покрасить стену
-3,EPIC,Уборка дома,NEW,Еженедельная процедура
-4,EPIC,Спорт,NEW,Улучшить здоровье
-
-3,2,1,4,
