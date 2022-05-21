@@ -1,4 +1,4 @@
-package tracker.controllers;
+import tracker.controllers.InMemoryTaskManager;
 
 class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     public InMemoryTaskManagerTest() {

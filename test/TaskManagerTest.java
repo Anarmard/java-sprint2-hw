@@ -1,6 +1,5 @@
-package tracker.controllers;
-
 import org.junit.jupiter.api.Test;
+import tracker.controllers.TaskManager;
 import tracker.model.Epic;
 import tracker.model.SubTask;
 import tracker.model.Task;
@@ -10,13 +9,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 abstract class TaskManagerTest<T extends TaskManager> {
-    protected T taskManager;
+    protected final T taskManager;
     public TaskManagerTest(T taskManager){
         this.taskManager = taskManager;
     }
@@ -27,15 +25,17 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task task = new Task("1Task", "1TaskDescription", 0L, TaskStatus.NEW);
         taskManager.createTask(task);
 
-        final Task savedTask = taskManager.getTaskByID(1L);
+        final Task taskInCorrectID = taskManager.getTaskByID(2L); // С неверным идентификатором задачи
+        assertNull(taskInCorrectID, "Несуществующая задача найдена.");
 
+        final Task savedTask = taskManager.getTaskByID(1L);
         assertNotNull(savedTask, "Задача не найдена.");
         assertEquals(task, savedTask, "Задачи не совпадают.");
 
         final List<Task> tasks = taskManager.getAllTasks();
 
         assertNotNull(tasks, "Задачи на возвращаются.");
-        assertEquals(1L, tasks.size(), "Неверное количество задач.");
+        assertEquals(1, tasks.size(), "Неверное количество задач.");
         assertEquals(task, tasks.get(0), "Задачи не совпадают.");
     }
 
@@ -46,15 +46,17 @@ abstract class TaskManagerTest<T extends TaskManager> {
         SubTask subTask13 = new SubTask("13SubTask", "13SubTaskDescription", 0L, TaskStatus.NEW, 1L);
         taskManager.createSubTask(subTask13);
 
-        final SubTask savedSubTask = taskManager.getSubTaskByID(2L);
+        final SubTask subTaskInCorrectID = taskManager.getSubTaskByID(3L); // С неверным идентификатором задачи
+        assertNull(subTaskInCorrectID, "Несуществующая подзадача найдена.");
 
+        final SubTask savedSubTask = taskManager.getSubTaskByID(2L);
         assertNotNull(savedSubTask, "Подзадача не найдена.");
         assertEquals(subTask13, savedSubTask, "Подзадачи не совпадают.");
 
         final List<SubTask> subTasks = taskManager.getAllSubTasks();
 
         assertNotNull(subTasks, "Подзадачи на возвращаются.");
-        assertEquals(1L, subTasks.size(), "Неверное количество подзадач.");
+        assertEquals(1, subTasks.size(), "Неверное количество подзадач.");
         assertEquals(subTask13, subTasks.get(0), "Задачи не совпадают.");
 
         final long epicId = subTask13.getIdEpic();
@@ -74,15 +76,16 @@ abstract class TaskManagerTest<T extends TaskManager> {
         SubTask subTask13 = new SubTask("13SubTask", "13SubTaskDescription", 0L, TaskStatus.NEW, 1L);
         taskManager.createSubTask(subTask13);
 
-        final Epic savedEpic = taskManager.getEpicByID(1L);
+        final Epic epicInCorrectID = taskManager.getEpicByID(2L); // С неверным идентификатором задачи
+        assertNull(epicInCorrectID, "Несуществующий Epic найден.");
 
+        final Epic savedEpic = taskManager.getEpicByID(1L);
         assertNotNull(savedEpic, "Эпик не найден.");
         assertEquals(epic1, savedEpic, "Эпики не совпадают.");
 
         final List<Epic> epics = taskManager.getAllEpics();
-
         assertNotNull(epics, "Эпики на возвращаются.");
-        assertEquals(1L, epics.size(), "Неверное количество Эпиков.");
+        assertEquals(1, epics.size(), "Неверное количество Эпиков.");
         assertEquals(epic1, epics.get(0), "Эпики не совпадают.");
 
         final List<SubTask> subTasks = taskManager.getSubTasksByEpicId(epic1.getId());
@@ -149,7 +152,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         final List<Task> tasks = taskManager.getAllTasks();
 
         assertNotNull(tasks, "Задачи на возвращаются.");
-        assertEquals(1L, tasks.size(), "Неверное количество задач.");
+        assertEquals(1, tasks.size(), "Неверное количество задач.");
     }
 
     // тест на расчет дат для Эпика по датам его подзадач
@@ -193,7 +196,31 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(task1, prioritizedTasksList.get(2), "Задача без срока не в конце списка.");
     }
 
-    //============================Проверкаы формирования истории просмотров============================
+    /*
+    По ТЗ нужны тесты
+    "Граничные условия:
+    a. Пустой список задач.
+    b. Эпик без подзадач.
+    c. Пустой список истории."
+    Пункт b вижу, а пункт а и с?
+    */
+
+    @Test
+    void emptyTaskManagerAndHistoryManager() {
+        final List<Task> taskBlankList = taskManager.getAllTasks();
+        final List<Epic> epicBlankList = taskManager.getAllEpics();
+        final List<SubTask> subTaskBlankList =taskManager.getAllSubTasks();
+        assertEquals(0, taskBlankList.size(), "Пустой список задач не пустой.");
+        assertEquals(0, epicBlankList.size(), "Пустой список эпиков не пустой.");
+        assertEquals(0, subTaskBlankList.size(), "Пустой список подзадач не пустой.");
+
+        final List<Task> historyBlankList = taskManager.getHistory();
+        assertEquals(0, historyBlankList.size(), "Пустая история просмотров не пустая.");
+    }
+
+
+    /* перенесли тестирование в InMemoryHistoryManagerTest (где тестируются все методы History)
+    //============================Проверка формирования истории просмотров============================
     @Test
     void checkGetHistory() {
         Task task1 = new Task("1Task", "1TaskDescription", 0L, TaskStatus.NEW);
@@ -218,7 +245,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.createSubTask(subTask13);
 
         final List<Task> historyBlank = taskManager.getHistory();
-        assertEquals(0L, historyBlank.size(), "История просмотров не пустая.");
+        assertEquals(0, historyBlank.size(), "История просмотров не пустая.");
 
         //создание истории
         taskManager.getSubTaskUser(5L);
@@ -229,13 +256,14 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.getTaskUser(2L);
         taskManager.getTaskUser(1L);
 
-        List<Task> historyComplete = taskManager.getHistory();
+        historyComplete = taskManager.getHistory();
 
         assertNotNull(historyComplete, "История просмотров пустая.");
-        assertEquals(5L, historyComplete.size(), "Неверное количество уникальных просмотренных задач.");
+        assertEquals(5, historyComplete.size(), "Неверное количество уникальных просмотренных задач.");
 
         taskManager.deleteTaskByID(1L);
         historyComplete = taskManager.getHistory();
-        assertEquals(4L, historyComplete.size(), "История не уменьшилась после удаления 1 задачи.");
+        assertEquals(4, historyComplete.size(), "История не уменьшилась после удаления 1 задачи.");
     }
+    */
 }

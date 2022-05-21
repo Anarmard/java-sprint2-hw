@@ -1,7 +1,10 @@
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import tracker.controllers.FileBackedTasksManager;
 import tracker.controllers.Managers;
 import tracker.controllers.TaskManager;
 import tracker.model.Task;
@@ -85,6 +88,19 @@ public class Main {
 
     // Метод для проверки истории просмотров задач
     public static void checkHistory(TaskManager manager) {
+        createHistory(manager);
+
+        manager.deleteTaskByID(1L);
+        manager.deleteSubTaskByID(5L);
+        System.out.println("\n===Печать истории просмотров после удаления задачи и подзадачи===");
+        System.out.println(manager.getHistory());
+
+        manager.deleteEpicByID(4L);
+        System.out.println("\n===Печать истории просмотров после удаления эпика===");
+        System.out.println(manager.getHistory()); // проверить, что подзадачи 6 и 7 тоже удалились
+    }
+
+    public static void createHistory(TaskManager manager) {
         manager.getSubTaskUser(5L);
         manager.getEpicUser(4L);
         manager.getTaskUser(1L);
@@ -101,15 +117,6 @@ public class Main {
 
         System.out.println("\n===Печать истории просмотров===");
         System.out.println(manager.getHistory());
-
-        manager.deleteTaskByID(1L);
-        manager.deleteSubTaskByID(5L);
-        System.out.println("\n===Печать истории просмотров после удаления задачи и подзадачи===");
-        System.out.println(manager.getHistory());
-
-        manager.deleteEpicByID(4L);
-        System.out.println("\n===Печать истории просмотров после удаления эпика===");
-        System.out.println(manager.getHistory()); // проверить, что подзадачи 6 и 7 тоже удалились
     }
 
     public static void checkMethods (TaskManager manager) {

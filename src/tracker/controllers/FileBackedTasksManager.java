@@ -27,34 +27,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private static final Path pathTaskManager = Paths.get(pathDr, fileName); // создаем объект типа Path (содержит полный путь к файлу)
     private static final FileBackedTasksManager manager = new FileBackedTasksManager(fileName);
 
-    public static void main(String[] args) { // Может в этом классе не надо все-таки main? Подумать
+    public static void main(String[] args) { // Может в этом классе не надо все-таки main? Перенести код в main основной
         createAllTasks(manager);
         System.out.println("\n===Печать всех задач/эпиков/подзадач без изменения===");
         printAllTasks(manager);
 
         // Запросите некоторые из них, чтобы заполнилась история просмотра.
-        manager.getSubTaskUser(5L);
-        manager.getEpicUser(4L);
-        manager.getTaskUser(1L);
-        manager.getSubTaskUser(5L);
-        manager.getEpicUser(8L);
-        manager.getTaskUser(2L);
-        manager.getTaskUser(2L);
-        manager.getSubTaskUser(6L);
-        manager.getEpicUser(8L);
-        manager.getSubTaskUser(7L);
-        manager.getTaskUser(2L);
-        manager.getTaskUser(1L);
-        manager.getEpicUser(8L);
-
+        createHistory(manager);
         System.out.println("\n===Печать истории просмотров===");
         System.out.println(toString(manager));
 
-        System.out.println("\n>>>Проверка как создается Manager из файла<<<");
         // Создайте новый FileBackedTasksManager менеджер из этого же файла.
+        System.out.println("\n>>>Проверка как создается Manager из файла<<<");
         FileBackedTasksManager managerLoadFromFile = loadFromFile(pathTaskManager);
 
-        // печать всех типов задач
         System.out.println("\n===Печать всех задач/эпиков/подзадач из файла===");
         printAllTasks(managerLoadFromFile);
 
@@ -108,7 +94,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return listID;
     }
 
-    private static FileBackedTasksManager loadFromFile(Path path) {
+    public static FileBackedTasksManager loadFromFile(Path path) {
         FileBackedTasksManager managerLoadFromFile = new FileBackedTasksManager("TasksCSV.csv");
         try (BufferedReader br = new BufferedReader(new
                 FileReader(path.toFile().getName(), StandardCharsets.UTF_8))) {
@@ -158,8 +144,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private String toString(Epic epic) {
         return epic.getId() + "," + TaskType.EPIC + "," + epic.getName() + "," + epic.getStatus() + "," + epic.getDescription()
-                + "," + manager.calcStartTimeEpic(epic.getId())+ "," + manager.calcDurationEpic(epic.getId()) + ","
-                + manager.calcEndTimeEpic(epic.getId());
+                + "," + epic.getStartTime()+ "," + epic.getDuration() + "," + epic.getEndTimeEpic();
     }
 
     private String toString(SubTask subTask) {
@@ -254,6 +239,30 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         // создание Эпика без подзадач
         Epic epic2 = new Epic ("2Epic", "2EpicDescription", 0L, TaskStatus.NEW, new ArrayList<>());
         manager.createEpic(epic2);
+
+        // создание задач с пересечением времени
+        Task task4 = new Task("3Task", "3TaskDescription", 0L, TaskStatus.NEW,
+                LocalDateTime.of(2022, 5, 1, 23, 30), 60L);
+        manager.createTask(task4);
+        SubTask subTask21 = new SubTask("21SubTask", "21SubTaskDescription", 0L, TaskStatus.NEW,
+                LocalDateTime.of(2022, 5, 1, 9, 0), 90L,8L);
+        manager.createSubTask(subTask21);
+    }
+
+    public static void createHistory(TaskManager manager) {
+        manager.getSubTaskUser(5L);
+        manager.getEpicUser(4L);
+        manager.getTaskUser(1L);
+        manager.getSubTaskUser(5L);
+        manager.getEpicUser(8L);
+        manager.getTaskUser(2L);
+        manager.getTaskUser(2L);
+        manager.getSubTaskUser(6L);
+        manager.getEpicUser(8L);
+        manager.getSubTaskUser(7L);
+        manager.getTaskUser(2L);
+        manager.getTaskUser(1L);
+        manager.getEpicUser(8L);
     }
 
     public static void printAllTasks (TaskManager manager) {

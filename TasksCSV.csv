@@ -2,4 +2,10 @@ id,type,name,status,description,epic
 1,TASK,1Task,NEW,1TaskDescription,null,null,null
 2,TASK,2Task,NEW,2TaskDescription,2022-05-01T10:00,180,2022-05-01T13:00
 3,TASK,3Task,NEW,3TaskDescription,2022-05-01T09:00,60,2022-05-01T10:00
+4,EPIC,1Epic,NEW,1EpicDescription,2022-05-01T23:00,120,2022-05-02T11:30
+8,EPIC,2Epic,NEW,2EpicDescription,null,null,null
+5,SUBTASK,11SubTask,NEW,11SubTaskDescription,2022-05-01T23:00,30,2022-05-01T23:30,4
+6,SUBTASK,12SubTask,NEW,12SubTaskDescription,2022-05-02T10:00,90,2022-05-02T11:30,4
+7,SUBTASK,13SubTask,NEW,13SubTaskDescription,null,null,null,4
 
+4,5,6,7,2,1,8,
