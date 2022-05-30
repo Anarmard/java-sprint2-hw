@@ -10,6 +10,8 @@ public class Task {
     private LocalDateTime startTime;
     private Long duration;
 
+    // может добавить TaskType в задачи, удобнее понимать Task, Epic, Subtask
+
     public Task(String name, String description, Long id, TaskStatus status, LocalDateTime startTime, Long duration) {
         this.name = name;
         this.description = description;

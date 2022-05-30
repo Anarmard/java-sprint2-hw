@@ -27,27 +27,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private static final Path pathTaskManager = Paths.get(pathDr, fileName); // создаем объект типа Path (содержит полный путь к файлу)
     private static final FileBackedTasksManager manager = new FileBackedTasksManager(fileName);
 
-    public static void main(String[] args) { // Может в этом классе не надо все-таки main? Перенести код в main основной
-        createAllTasks(manager);
-        System.out.println("\n===Печать всех задач/эпиков/подзадач без изменения===");
-        printAllTasks(manager);
-
-        // Запросите некоторые из них, чтобы заполнилась история просмотра.
-        createHistory(manager);
-        System.out.println("\n===Печать истории просмотров===");
-        System.out.println(toString(manager));
-
-        // Создайте новый FileBackedTasksManager менеджер из этого же файла.
-        System.out.println("\n>>>Проверка как создается Manager из файла<<<");
-        FileBackedTasksManager managerLoadFromFile = loadFromFile(pathTaskManager);
-
-        System.out.println("\n===Печать всех задач/эпиков/подзадач из файла===");
-        printAllTasks(managerLoadFromFile);
-
-        System.out.println("\n===Печать истории просмотров===");
-        System.out.println(toString(managerLoadFromFile));
-    }
-
     // Разделение одной строки на массив:
     // String[] split = value.split(",");
     // split[0] - это id
@@ -165,7 +144,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return builder.toString();
     }
 
-    private void save() {
+    public void save() {
         // проверка, есть такой файл или нет. Если есть, то удаляем и создаем. Если нет, то просто создаем.
         try {
             // удаление файла, если он уже существует
