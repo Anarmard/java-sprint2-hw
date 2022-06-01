@@ -1,13 +1,8 @@
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import com.google.gson.Gson;
 import tracker.controllers.*;
 import tracker.model.Task;
 import tracker.model.SubTask;
@@ -17,12 +12,7 @@ import tracker.servers.HttpTaskServer;
 import tracker.servers.KVServer;
 
 public class Main {
-    public static void main(String[] args) throws IOException, InterruptedException {
-        TaskManager manager = Managers.getDefault();
-        createAllTasks(manager);
-        System.out.println("\n===Печать всех задач/эпиков/подзадач изначальный===");
-        printAllTasks(manager);
-
+    public static void main(String[] args) throws IOException {
         try {
             HttpTaskServer httpTaskServer = new HttpTaskServer();
         } catch (IOException e) {
@@ -31,18 +21,10 @@ public class Main {
 
         new KVServer().start();
 
-        /*
-        int input = printMenu();
-        if (input == 1) {
-            checkMethods(manager);
-        } else if (input == 2) {
-            checkHistory(manager);
-        } else if (input == 3) {
-            System.out.println(manager.getPrioritizedTasks());
-        } else {
-            System.out.println("неверная команда");
-        }
-        */
+        TaskManager manager = Managers.getDefault();
+        createAllTasks(manager);
+        System.out.println("\n===Печать всех задач/эпиков/подзадач изначальный===");
+        printAllTasks(manager);
     }
 
     public static int printMenu() {

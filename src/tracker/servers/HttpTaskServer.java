@@ -26,7 +26,7 @@ public class HttpTaskServer {
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     public HttpTaskServer() throws IOException {
-        this.taskManager = Managers.getDefault();
+        taskManager = Managers.getDefault();
 
         // IOException могут сгенерировать методы create() и bind(...)
         httpServer = HttpServer.create();
@@ -73,6 +73,14 @@ public class HttpTaskServer {
                     String idString = path.split("/")[3];
 
                     if (idString != null) {
+                        System.out.println(idString);
+                        System.out.println(taskManager.getAllTasks());
+                        System.out.println(taskManager.getTaskByID(Long.valueOf(idString)));
+                        if (taskManager.getTaskByID(Long.valueOf(idString)) == null) {
+                            System.out.println("Задачи с таким ID не найдено");
+                            httpExchange.sendResponseHeaders(404, 0);
+                            return;
+                        }
                         System.out.println(taskManager.getTaskUser(Long.valueOf(idString)));
                         httpExchange.sendResponseHeaders(200, 0);
                         try (OutputStream os = httpExchange.getResponseBody()) {
@@ -91,6 +99,11 @@ public class HttpTaskServer {
                     idString = path.split("/")[3];
 
                     if (idString != null) {
+                        if (taskManager.getTaskByID(Long.valueOf(idString)) == null) {
+                            System.out.println("Задачи с таким ID не найдено");
+                            httpExchange.sendResponseHeaders(404, 0);
+                            return;
+                        }
                         taskManager.deleteTaskByID(Long.valueOf(idString));
                         httpExchange.sendResponseHeaders(200, 0);
                         try (OutputStream os = httpExchange.getResponseBody()) {

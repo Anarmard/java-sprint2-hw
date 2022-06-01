@@ -3,6 +3,7 @@ package tracker.servers;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,9 +56,18 @@ public class KVServer {
                     h.sendResponseHeaders(400, 0);
                     return;
                 }
+                if (data.get(key) == null) {
+                    System.out.println("Значений с таким ключом не найдено");
+                    h.sendResponseHeaders(404, 0);
+                    return;
+                }
                 String value = data.get(key);
                 System.out.println("Значение " + value + " для ключа " + key + " успешно получено!");
                 h.sendResponseHeaders(200, 0);
+                try (OutputStream os = h.getResponseBody()) {
+                    os.write(value.getBytes());
+                }
+
             } else {
                 System.out.println("/save ждёт POST-запрос, а получил: " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
