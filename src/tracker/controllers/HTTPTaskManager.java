@@ -32,11 +32,7 @@ public class HTTPTaskManager extends FileBackedTasksManager {
         try {
             kvTaskClient.put("tasks", jsonTasks); // ключ это "tasks", а в json все task сохраняем
         } catch (IOException | InterruptedException e) {
-            try {
-                throw new ManagerSaveException(e);
-            } catch (ManagerSaveException ex) {
-                ex.printStackTrace();
-            }
+            throw new ManagerSaveException(e);
         }
 
         List<Epic> epicList = getAllEpics();
@@ -44,13 +40,7 @@ public class HTTPTaskManager extends FileBackedTasksManager {
         try {
             kvTaskClient.put("epics", jsonEpics);
         } catch (IOException | InterruptedException e) {
-            try {
-                throw new ManagerSaveException(e);
-                // Александр, я верно понял ваш комментарий из KVTaskClient
-                // "...а пробрасывались выше, обернуты в ManagerSaveException"? (УДАЛИТЬ)
-            } catch (ManagerSaveException ex) {
-                ex.printStackTrace();
-            }
+            throw new ManagerSaveException(e);
         }
 
         List<SubTask> subTaskList = getAllSubTasks();
@@ -58,11 +48,7 @@ public class HTTPTaskManager extends FileBackedTasksManager {
         try {
             kvTaskClient.put("subtasks", jsonSubTasks);
         } catch (IOException | InterruptedException e) {
-            try {
-                throw new ManagerSaveException(e);
-            } catch (ManagerSaveException ex) {
-                ex.printStackTrace();
-            }
+            throw new ManagerSaveException(e);
         }
 
         // еще надо сохранить историю
@@ -107,7 +93,6 @@ public class HTTPTaskManager extends FileBackedTasksManager {
         for (Task task : historyList) {
             managerLoadFromServer.getTaskUser(task.getId());
         }
-
         return managerLoadFromServer;
     }
 }

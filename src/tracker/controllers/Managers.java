@@ -1,8 +1,10 @@
 package tracker.controllers;
 
+import tracker.exceptions.ManagerSaveException;
+
 public class Managers {
 
-    public static TaskManager getDefault() {
+    public static TaskManager getDefault() throws ManagerSaveException {
         return new HTTPTaskManager("http://localhost:8078/");
     }
 

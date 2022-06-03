@@ -19,16 +19,22 @@ public class KVTaskClient {
     public KVTaskClient(String urlKVServer) {
         this.urlKVServer = urlKVServer;
 
-        // Александр, надеюсь я правильно понял ваш комментарий (УДАЛИТЬ)
         try {
             HttpRequest requestForRegistration = HttpRequest.newBuilder() // получаем экземпляр билдера
                     .GET()   // указываем HTTP-метод запроса
                     .uri(URI.create("http://localhost:8078/register")) // указываем адрес сервера
                     .build(); // создаём ("строим") http-запрос
-            this.apiToken = client.send(requestForRegistration, handler).body();
+            HttpResponse<String> response = client.send(requestForRegistration, handler);
+            this.apiToken = response.body();
+            int status = response.statusCode();
+            // обрабатываем коды успешного состояния
+            if(status == 200) {
+                System.out.println("Сервер успешно обработал запрос. Код состояния: " + status);
+            } else {
+                System.out.println("Сервер сообщил о проблеме с запросом. Код состояния: " + status);
+            }
         } catch (IOException | InterruptedException e) {
-            System.out.println("Во время выполнения запроса ресурса по URL-адресу: '" + urlKVServer + "', возникла ошибка.\n" +
-                    "Проверьте, пожалуйста, адрес и повторите попытку.");
+            //throw new ManagerSaveException(e);
         }
     }
 
@@ -48,23 +54,42 @@ public class KVTaskClient {
 
         // отправляем запрос и получаем ответ от сервера
         HttpResponse<String> response = client.send(request, handler);
+        int status = response.statusCode();
+        // обрабатываем коды успешного состояния
+        if(status == 200) {
+            System.out.println("Сервер успешно обработал запрос. Код состояния: " + status);
+        } else {
+            System.out.println("Сервер сообщил о проблеме с запросом. Код состояния: " + status);
+        }
+
     }
 
     //Метод String load(String key) должен возвращать состояние менеджера задач через запрос GET /load/<ключ>?API_TOKEN=
     public String load(String key) throws IOException, InterruptedException {
         // создаём экземпляр URI, содержащий адрес нужного ресурса
-        URI uri = URI.create("http://localhost:8078/" + "load/" + key + "?API_TOKEN=" + apiToken);
+        try {
+            URI uri = URI.create("http://localhost:8078/" + "load/" + key + "?API_TOKEN=" + apiToken);
 
-        // создайте объект, описывающий HTTP-запрос
-        HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .uri(uri)
-                .version(HttpClient.Version.HTTP_1_1)
-                .header("Accept", "application/json")
-                .build();
+            // создайте объект, описывающий HTTP-запрос
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(uri)
+                    .version(HttpClient.Version.HTTP_1_1)
+                    .header("Accept", "application/json")
+                    .build();
 
-        // отправьте запрос
-        HttpResponse<String> response = client.send(request, handler);
-        return String.valueOf(response); // Александр, я верно понял ваш комментарий про пробрасывание? (УДАЛИТЬ)
+            // отправьте запрос
+            HttpResponse<String> response = client.send(request, handler);
+            int status = response.statusCode();
+            // обрабатываем коды успешного состояния
+            if(status == 200) {
+                System.out.println("Сервер успешно обработал запрос. Код состояния: " + status);
+            } else {
+                System.out.println("Сервер сообщил о проблеме с запросом. Код состояния: " + status);
+            }
+            return String.valueOf(response);
+        } catch (IOException | InterruptedException e) {
+            throw new ManagerSaveException("Не удалось сохранить значение: ", e.getMessage());
+        }
     }
 }

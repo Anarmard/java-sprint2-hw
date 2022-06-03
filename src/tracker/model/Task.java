@@ -10,10 +10,6 @@ public class Task {
     private LocalDateTime startTime;
     private Long duration;
 
-    // УДАЛИТЬ может добавить TaskType в задачи, удобнее понимать Task, Epic, Subtask
-    // УДАЛИТЬ - думал, что это упростить определение того, какой объект сейчас обрабатывается Epic или Task
-    // УДАлить - но наверное это не нужно
-
     public Task(String name, String description, Long id, TaskStatus status, LocalDateTime startTime, Long duration) {
         this.name = name;
         this.description = description;
