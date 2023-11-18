@@ -9,24 +9,22 @@ import tracker.model.Task;
 import tracker.model.TaskStatus;
 
 public class InMemoryTaskManager implements TaskManager{
-    private Long id = Long.valueOf(0);
+    private Long id = 0L;
     private final Map<Long, Task> taskMap = new HashMap<>();
     private final Map<Long, SubTask> subTaskMap = new HashMap<>();
     private final Map<Long, Epic> epicMap = new HashMap<>();
     private static final HistoryManager historyManager = Managers.getDefaultHistory();
 
-    private final Comparator<Task> comparator = new Comparator<>() {
-        @Override
-        public int compare(Task t1, Task t2) { // сортируем по getStartTime, если пусто ранжировать в конце по id
-            if ((t1.getStartTime() != null) && (t2.getStartTime() != null)) {
-                return t1.getStartTime().compareTo(t2.getStartTime());
-            } else if ((t1.getStartTime() == null) && (t2.getStartTime() == null)) {
-                return t1.getId().compareTo(t2.getId());
-            } else if (t1.getStartTime() == null) {
-                return 1;
-            } else
-                return -1;
-        }
+    // сортируем по getStartTime, если пусто ранжировать в конце по id
+    private final Comparator<Task> comparator = (t1, t2) -> {
+        if ((t1.getStartTime() != null) && (t2.getStartTime() != null)) {
+            return t1.getStartTime().compareTo(t2.getStartTime());
+        } else if ((t1.getStartTime() == null) && (t2.getStartTime() == null)) {
+            return t1.getId().compareTo(t2.getId());
+        } else if (t1.getStartTime() == null) {
+            return 1;
+        } else
+            return -1;
     };
 
     private final Set<Task> prioritizedTasks = new TreeSet<>(comparator);
@@ -77,22 +75,19 @@ public class InMemoryTaskManager implements TaskManager{
     public List<Task> getAllTasks() {
         // лучше использовать интерфейсы вместо реализации в сигнатуре. public List<Task> getAllTasks()
         // лучше чем завязка на конкретную реализацию ArrayList.
-        List<Task> taskArrayList = new ArrayList<>(taskMap.values());
         // new ArrayList(taskMap.values()) сделает ровно ту же задачу всего одной строкой
         // for (Task task : taskMap.values()) {  taskArrayList.add(task); }
-        return taskArrayList;
+        return new ArrayList<>(taskMap.values());
     }
 
     @Override
     public List<Epic> getAllEpics() {
-        List<Epic> epicArrayList = new ArrayList<>(epicMap.values());
-        return epicArrayList;
+        return new ArrayList<>(epicMap.values());
     }
 
     @Override
     public List<SubTask> getAllSubTasks() {
-        List<SubTask> subTaskArrayList = new ArrayList<>(subTaskMap.values());
-        return subTaskArrayList;
+        return new ArrayList<>(subTaskMap.values());
     }
 
     // Удаление всех задач.

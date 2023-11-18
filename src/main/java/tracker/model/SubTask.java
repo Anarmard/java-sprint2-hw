@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class SubTask extends Task {
-    private Long idEpic;
+    private final Long idEpic;
 
     public SubTask(String name, String description, Long id, TaskStatus status, LocalDateTime startTime, Long duration, Long idEpic) {
         super(name, description, id, status, startTime, duration);
@@ -36,7 +36,7 @@ public class SubTask extends Task {
         return Objects.equals(getName(), otherSubTask.getName()) &&
                 Objects.equals(getDescription(), otherSubTask.getDescription()) &&
                 Objects.equals(getStatus(), otherSubTask.getStatus()) &&
-                (idEpic == otherSubTask.idEpic);
+                (Objects.equals(idEpic, otherSubTask.idEpic));
     }
 
     @Override
