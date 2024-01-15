@@ -39,14 +39,48 @@
 - **idEpic** (только для **SubTask**) - УИН эпика, в рамках которого выполняется подзадача
 
 ## Описание API
-
-
+- Сервер HttpTaskServer слушает порт 8080. 
+- Задачи передаются в теле запроса в формате JSON, id передается параметром запроса.
+- Для каждого метода TaskManager создан отдельный эндпоинт с методами POST, GET, DELETE.
+- Эндпоинты для :
+  - GET /tasks/**task**
+  - GET /tasks/**task**/?id=
+  - POST /tasks/**task**/ Body: {task...}
+  - DELETE /tasks/**task**/?id=
+  - DELETE /tasks/**task**/
+  Аналогичные эндпоинты для **epic** и **subtask**.
+  - GET /tasks/subtasks/epic/?id= - получение всех подзадач указанного эпика
+  - GET /tasks/history - получение истории просмотров задач
+  - GET /tasks/ - получение задач по дате начала
 
 ## Сборка и установка
+Требования:
+- Git
+- JDK 11 или выше
+- Maven 3.6.0 или выше
 
-
+Как запустить приложение:
+1. Склонируйте репозиторий на локальную компьютер:
+```bash
+https://github.com/Anarmard/java-task-manager.git
+```
+2. Перейдите в директорию проекта:
+```bash
+cd java-task-manager
+```
+3. Соберите проект:
+```bash
+mvn clean install
+```
+4. Запустите приложение:
+```bash
+mvn exec:java -Dexec.mainClass=”Main”
+```
 
 ## Стек технологий
+- Java 11
+- Apache Maven
+- JUnit
 
 
 
